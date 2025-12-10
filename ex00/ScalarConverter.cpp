@@ -18,11 +18,17 @@ static bool isDoubleStr(const std::string& str) {
 }
 
 static bool isFlatStr(const std::string& str) {
-    if (str == "nanf" || str == "+nanf" || str == "-nanf" || 
+    if (str == "nanf" || str == "+nanf" || str == "-nanf" ||
         str == "inff" || str == "+inff" || str == "-inff")
         return true;
     return false;
 }
+
+// static_cast ... コンパイル時に行う
+// 暗黙的な変換がある場合や、予測可能な変換のときに使う
+// char -> int, float -> double は安全な拡大変換(情報が失われないことが多い)
+// int → char、double → float、float → int などは情報が失われる可能性がある
+//（切り捨て・オーバーフロー・実装依存の結果）
 
 void ScalarConverter::convert(const std::string& str) {
     switch (validateType(str)) {
@@ -41,8 +47,8 @@ void ScalarConverter::convert(const std::string& str) {
             // char
             if (i < 0 || i > 127)
                 std::cout << "char: impossible" << std::endl;
-            else 
-                printChar(static_cast<int>(i));
+            else
+                printChar(static_cast<char>(i));
             printInt(i);
             printFloat(static_cast<float>(i));
             printDouble(static_cast<double>(i));
@@ -55,9 +61,9 @@ void ScalarConverter::convert(const std::string& str) {
             iss >> f;
 
             //char
-            if (isFlatStr(str) || f < 0.0f || f > 127.0f) 
+            if (isFlatStr(str) || f < 0.0f || f > 127.0f)
                 std::cout << "char: impossible" << std::endl;
-            else 
+            else
                 printChar(static_cast<char>(f));
             // int
             if (isFlatStr(str) ||
@@ -68,7 +74,7 @@ void ScalarConverter::convert(const std::string& str) {
                 printInt(static_cast<int>(f));
             if (isFlatStr(str)) {
                 std::cout << "float: " << str << std::endl;
-                std::cout << "double: " << str.substr(0, str.size() - 1) 
+                std::cout << "double: " << str.substr(0, str.size() - 1)
                 << std::endl;
             }
             else {
@@ -83,9 +89,9 @@ void ScalarConverter::convert(const std::string& str) {
             iss >> d;
 
             // char
-            if (isDoubleStr(str) || d < 0.0 || d > 127.0) 
+            if (isDoubleStr(str) || d < 0.0 || d > 127.0)
                 std::cout << "char: impossible" << std::endl;
-            else 
+            else
                 printChar(static_cast<char>(d));
             // int
             if (isDoubleStr(str) ||
@@ -95,17 +101,17 @@ void ScalarConverter::convert(const std::string& str) {
             else
                 printInt(static_cast<int>(d));
             // float
-            if (isDoubleStr(str)) 
+            if (isDoubleStr(str))
                 std::cout << "float: " << str << "f" << std::endl;
             else if  (d > static_cast<double>(std::numeric_limits<float>::max()) ||
-                      d < -static_cast<double>(std::numeric_limits<float>::max())) 
-                std::cout << "float: impossible" << std::endl;         
-            else 
+                      d < -static_cast<double>(std::numeric_limits<float>::max()))
+                std::cout << "float: impossible" << std::endl;
+            else
                 printFloat(static_cast<float>(d));
-            if (isDoubleStr(str)) 
+            if (isDoubleStr(str))
                 std::cout << "double: " << str << std::endl;
-            else 
-                printDouble(d);    
+            else
+                printDouble(d);
         break;
         }
         case NOTHING: throw ConvertException();
@@ -126,7 +132,7 @@ Type ScalarConverter::validateType(const std::string& str) {
         return CHAR;
     if (canConvertInt(str))
         return INT;
-    if (canConvertFloat(str)) 
+    if (canConvertFloat(str))
         return FLOAT;
     if(canConvertDouble(str))
         return DOUBLE;
@@ -144,16 +150,16 @@ bool ScalarConverter::canConvertInt(const std::string& str) {
     // try {
     //     size_t idx = 0;
     //     long v = std::stol(str, &idx); //stol()はc++11だが、コンパイルできる？
-    //     if (idx != str.size()) 
+    //     if (idx != str.size())
     //         return false;
     //     if (v < static_cast<long>(std::numeric_limits<int>::min()) ||
     //         v > static_cast<long>(std::numeric_limits<int>::max()))
-    //         return false; 
+    //         return false;
     //     return true;
     // } catch (const std::invalid_argument&) {
-    //     return false; 
+    //     return false;
     // } catch (const std::out_of_range&) {
-    //     return false; 
+    //     return false;
     // }
     errno = 0;
     char* end = NULL;
@@ -164,21 +170,21 @@ bool ScalarConverter::canConvertInt(const std::string& str) {
         errno == ERANGE || //overflow
         v < static_cast<long>(std::numeric_limits<int>::min()) ||
         v > static_cast<long>(std::numeric_limits<int>::max()))
-        return false; 
+        return false;
     return true;
 
 }
 
 bool ScalarConverter::canConvertFloat(const std::string& str) {
-    if (str[str.size() - 1] != 'f') 
+    if (str[str.size() - 1] != 'f')
         return false;
     std::string tmp = str.substr(0, str.size() - 1);
     errno = 0;
     char* end = NULL;
     const char* s = tmp.c_str();
     double d = std::strtod(s, &end);
-    if (end == s || 
-        *end != '\0'|| 
+    if (end == s ||
+        *end != '\0'||
         errno == ERANGE ||
         d > static_cast<double>(std::numeric_limits<float>::max()) ||
         d < -static_cast<double>(std::numeric_limits<float>::max()))
@@ -192,8 +198,8 @@ bool ScalarConverter::canConvertDouble(const std::string& str) {
     char* end = NULL;
     const char* s = str.c_str();
     double d = std::strtod(s, &end);
-    if (end == s || 
-        *end != '\0'|| 
+    if (end == s ||
+        *end != '\0'||
         errno == ERANGE)
         return false;
     (void)d;
@@ -201,21 +207,21 @@ bool ScalarConverter::canConvertDouble(const std::string& str) {
 }
 
 void ScalarConverter::printChar(char c) {
-    if (std::isprint(static_cast<unsigned char>(c))) 
+    if (std::isprint(static_cast<unsigned char>(c)))
       std::cout << "char: '" << c << "'" << std::endl;
-     else 
+     else
       std::cout << "char: Non displayable" << std::endl;
 }
-  
+
 void ScalarConverter::printInt(int i) {
     std::cout << "int: " << i << std::endl;
 }
-  
+
 void ScalarConverter::printFloat(float f) {
     std::cout << "float: " << std::fixed << std::setprecision(1) << f << "f"
               << std::endl;
 }
-  
+
 void ScalarConverter::printDouble(double d) {
     std::cout << "double: " << std::fixed << std::setprecision(1) << d
               << std::endl;
