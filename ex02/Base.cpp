@@ -57,6 +57,7 @@ void identify(Base& p) {
 }
 
 // dynamic_cast... 動的(実行時)に行う
+// 基底クラスから派生クラスへ変換する際に使われる
 // クラスにおいて、安全な up/ down/ side の型変換に使う
 // 失敗したとき、pointer版はNULL, 参照版は例外(bad_cast)
 // クラスにVTable(仮想関数)がある必要がある = Polymorphic objects
