@@ -3,6 +3,8 @@
 #include <ctime>
 #include <cstdlib>
 
+//#include <typeinfo>
+
 #define BLACK   "\033[0;30m"
 #define RED     "\033[0;31m"
 #define GREEN   "\033[0;32m"
@@ -73,4 +75,24 @@ int main(void) {
 		}
 		std::cout << std::endl;
 	}
+
+	// printColor("dynamic_cast tests", B_CYAN);
+    // {
+    //     Base* p = new A;
+    //     std::cout << "dynamic_cast<B*>(A*) -> "
+    //               << (dynamic_cast<B*>(p) ? "succeeded" : "failed (nullptr)") << std::endl;
+    //     try {
+    //         (void)dynamic_cast<A&>(*p);
+    //         std::cout << "dynamic_cast<A&>(*p) -> succeeded" << std::endl;
+    //     } catch (const std::bad_cast&) {
+    //         std::cout << "dynamic_cast<A&>(*p) -> bad_cast" << std::endl;
+    //     }
+    //     try {
+    //         (void)dynamic_cast<B&>(*p);
+    //         std::cout << "dynamic_cast<B&>(*p) -> succeeded" << std::endl;
+    //     } catch (const std::bad_cast&) {
+    //         std::cout << "dynamic_cast<B&>(*p) -> bad_cast (as expected)" << std::endl;
+    //     }
+    //     delete p;
+    // }
 }

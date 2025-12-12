@@ -128,6 +128,7 @@ Type ScalarConverter::validateType(const std::string& str) {
         return DOUBLE;
     if (isFlatStr(str))
         return FLOAT;
+
     if (canConvertChar(str))
         return CHAR;
     if (canConvertInt(str))
@@ -221,6 +222,7 @@ void ScalarConverter::printFloat(float f) {
     std::cout << "float: " << std::fixed << std::setprecision(1) << f << "f"
               << std::endl;
 }
+// setprecision(1) で小数点以下1桁まで表示
 
 void ScalarConverter::printDouble(double d) {
     std::cout << "double: " << std::fixed << std::setprecision(1) << d
